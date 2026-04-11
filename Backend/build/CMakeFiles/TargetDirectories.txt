@@ -1,0 +1,3 @@
+/Users/lucasmariano/TrackerTerminal/Backend/build/CMakeFiles/backend_quant_terminal.dir
+/Users/lucasmariano/TrackerTerminal/Backend/build/CMakeFiles/edit_cache.dir
+/Users/lucasmariano/TrackerTerminal/Backend/build/CMakeFiles/rebuild_cache.dir

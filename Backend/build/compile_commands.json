@@ -1,0 +1,20 @@
+[
+{
+  "directory": "/Users/lucasmariano/TrackerTerminal/Backend/build",
+  "command": "/usr/bin/c++  -I/Users/lucasmariano/TrackerTerminal/Backend/include -isystem /opt/homebrew/include -std=gnu++20 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/backend_quant_terminal.dir/src/main.cpp.o -c /Users/lucasmariano/TrackerTerminal/Backend/src/main.cpp",
+  "file": "/Users/lucasmariano/TrackerTerminal/Backend/src/main.cpp",
+  "output": "CMakeFiles/backend_quant_terminal.dir/src/main.cpp.o"
+},
+{
+  "directory": "/Users/lucasmariano/TrackerTerminal/Backend/build",
+  "command": "/usr/bin/c++  -I/Users/lucasmariano/TrackerTerminal/Backend/include -isystem /opt/homebrew/include -std=gnu++20 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/backend_quant_terminal.dir/src/market_data/BinanceMarketData.cpp.o -c /Users/lucasmariano/TrackerTerminal/Backend/src/market_data/BinanceMarketData.cpp",
+  "file": "/Users/lucasmariano/TrackerTerminal/Backend/src/market_data/BinanceMarketData.cpp",
+  "output": "CMakeFiles/backend_quant_terminal.dir/src/market_data/BinanceMarketData.cpp.o"
+},
+{
+  "directory": "/Users/lucasmariano/TrackerTerminal/Backend/build",
+  "command": "/usr/bin/c++  -I/Users/lucasmariano/TrackerTerminal/Backend/include -isystem /opt/homebrew/include -std=gnu++20 -arch arm64 -Wall -Wextra -Wpedantic -o CMakeFiles/backend_quant_terminal.dir/src/OrderGateway.cpp.o -c /Users/lucasmariano/TrackerTerminal/Backend/src/OrderGateway.cpp",
+  "file": "/Users/lucasmariano/TrackerTerminal/Backend/src/OrderGateway.cpp",
+  "output": "CMakeFiles/backend_quant_terminal.dir/src/OrderGateway.cpp.o"
+}
+]
