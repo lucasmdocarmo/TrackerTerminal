@@ -38,7 +38,8 @@ public:
         j["executed_price"] = report.lastPrice;
         j["executed_quantity"] = report.lastQty;
         j["leaves_qty"] = report.leavesQty;
-        
+        j["side"] = (report.side == Side::Buy) ? "BUY" : "SELL";
+
         auto msg = std::make_shared<std::string>(j.dump() + "\n");
         
         std::lock_guard<std::mutex> lock(sockets_mutex_);

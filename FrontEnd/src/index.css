@@ -2,28 +2,24 @@
 
 :root {
   --bg-base: #000000;
-  --bg-panel: #000000;
-  --bg-panel-hover: #080808;
-  --border-dim: #333333;
-  --border-bright: #666666;
-  
-  --text-main: #ff9900; /* Amber / Bloomberg Orange */
-  --text-muted: #aaaaaa;
-  
-  --color-up: #00ff00; /* Neon Green */
-  --color-down: #ff3333; /* Bright Red */
-  --color-accent: #ffb732; /* Lighter Orange */
+  --bg-panel: #050505;
+  --bg-panel-hover: #0d0d0d;
+  --border-dim: #2a2a2a;
+  --border-bright: #555555;
+
+  --text-main: #ff9900;
+  --text-muted: #888888;
+
+  --color-up:      #00ff00;
+  --color-down:    #ff3333;
+  --color-accent:  #ffb732;
   --color-warning: #ff00ff;
 
   --font-sans: 'Arial', sans-serif;
   --font-mono: 'Consolas', 'JetBrains Mono', monospace;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   background-color: var(--bg-base);
@@ -31,51 +27,51 @@ body {
   font-family: var(--font-sans);
   font-size: 13px;
   line-height: 1.4;
-  overflow: hidden; /* Terminal is fixed screen */
+  overflow: hidden;
 }
 
-/* Base Panel Styles */
+/* ── Panel shell ─────────────────────────────────────────────────────────── */
 .panel {
   background-color: var(--bg-panel);
   border: 1px solid var(--border-dim);
-  border-radius: 4px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .panel-header {
-  background-color: #000080; /* IBM Blue / Terminal Blue */
+  background-color: #000080;
   border-bottom: 2px solid var(--text-main);
   padding: 4px 8px;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 12px;
   text-transform: uppercase;
-  color: #ffffff; /* White text on blue background */
+  color: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .panel-content {
-  flex-grow: 1;
+  flex: 1 1 0;
   overflow-y: auto;
   padding: 8px;
+  min-height: 0;
 }
 
-/* Grid Layout */
+/* ── Grid layout ─────────────────────────────────────────────────────────── */
 .app-container {
   display: grid;
-  grid-template-columns: 320px 1fr 340px;
-  grid-template-rows: 30px 1fr 1fr 200px; /* Added row for Strategy Panel */
-  gap: 4px;
-  padding: 4px;
-  background-color: var(--border-dim); /* Acts as grid lines */
+  grid-template-columns: 300px 1fr 300px;
+  grid-template-rows: 30px 1fr 200px 160px;
+  gap: 3px;
+  padding: 3px;
+  background-color: #111;
   height: 100vh;
   width: 100vw;
 }
 
-/* Top bar spans full width */
 .top-bar {
   grid-column: 1 / -1;
   display: flex;
@@ -83,103 +79,152 @@ body {
   padding: 0 16px;
   background-color: var(--bg-panel);
   border: 1px solid var(--border-dim);
-  border-radius: 4px;
   font-family: var(--font-mono);
+  gap: 16px;
 }
 
-.top-bar .ticker-tape {
-  display: flex;
-  gap: 24px;
-  white-space: nowrap;
-  animation: scrollLeft 40s linear infinite;
-}
+/* column 1 */
+.watchlist-panel { grid-column: 1; grid-row: 2; }
+.strategy-panel  { grid-column: 1; grid-row: 3 / span 2; }
 
-/* Specific Panel Placements */
-/* Specific Panel Placements */
-.watchlist-panel {
-  grid-column: 1;
-  grid-row: 2;
-}
+/* column 2 — chart takes rows 2+3, positions takes row 4 */
+.chart-panel     { grid-column: 2; grid-row: 2 / span 2; }
+.positions-panel { grid-column: 2; grid-row: 4; }
 
-/* Strategy Panel directly below Watchlist */
-.strategy-panel {
-  grid-column: 1;
-  grid-row: 3;
-}
+/* column 3 — DOM takes rows 2+3, OMON ticket takes row 4 */
+.dom-panel       { grid-column: 3; grid-row: 2 / span 2; }
+.omon-panel      { grid-column: 3; grid-row: 4; }
 
-.chart-panel {
-  grid-column: 2;
-  grid-row: 2;
-}
+/* bottom tape spans all columns in row 5 */
+.execution-panel { grid-column: 1 / -1; grid-row: 5; }
 
-.help-panel {
-  grid-column: 2;
-  grid-row: 3;
-}
-
-.dom-panel {
-  grid-column: 3;
-  grid-row: 2 / span 2;
-}
-
-.execution-panel {
-  grid-column: 1 / -1;
-  grid-row: 4;
-}
-
-/* Typography Utilities */
-.mono {
-  font-family: var(--font-mono);
-}
-
-.up { color: var(--color-up); }
-.down { color: var(--color-down); }
+/* ── Typography ──────────────────────────────────────────────────────────── */
+.mono    { font-family: var(--font-mono); }
+.up      { color: var(--color-up); }
+.down    { color: var(--color-down); }
 .numeric { text-align: right; font-feature-settings: "tnum"; }
 
-/* Table Styles */
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
+/* ── Tables ──────────────────────────────────────────────────────────────── */
+.data-table { width: 100%; border-collapse: collapse; }
 
 .data-table th {
   text-align: left;
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
   text-transform: uppercase;
-  padding: 4px 4px;
+  padding: 3px 4px;
   border-bottom: 1px solid var(--border-dim);
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .data-table td {
-  padding: 4px 4px;
-  font-size: 14px;
+  padding: 3px 4px;
+  font-size: 13px;
   font-weight: 600;
   border-bottom: 1px dotted var(--border-dim);
+  white-space: nowrap;
 }
 
-.data-table tr:hover td {
-  background-color: rgba(22, 27, 34, 0.5);
+.data-table tr:hover td { background-color: rgba(255,153,0,0.04); }
+
+/* Prevent watchlist symbol column from being clipped */
+.watchlist-panel .data-table { table-layout: fixed; }
+.watchlist-panel .data-table td:first-child,
+.watchlist-panel .data-table th:first-child {
+  width: 96px;
+  min-width: 96px;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
+/* ── LONG / SHORT toggle buttons ─────────────────────────────────────────── */
+.direction-btn-group { display: flex; }
+
+.direction-btn {
+  flex: 1;
+  padding: 7px 0;
   background: var(--bg-base);
+  color: var(--text-muted);
+  border: 1px solid var(--border-dim);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
 }
-::-webkit-scrollbar-thumb {
-  background: var(--border-dim);
-  border-radius: 3px;
+.direction-btn:first-child { border-right: none; }
+
+.direction-btn--active-long {
+  background: rgba(0, 255, 0, 0.12);
+  color: var(--color-up);
+  border-color: var(--color-up);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-bright);
+.direction-btn--active-short {
+  background: rgba(255, 51, 51, 0.12);
+  color: var(--color-down);
+  border-color: var(--color-down);
 }
 
-@keyframes scrollLeft {
-  0% { transform: translateX(100vw); }
-  100% { transform: translateX(-100%); }
+/* ── Order type tabs ─────────────────────────────────────────────────────── */
+.order-tab-group { display: flex; }
+
+.order-tab {
+  flex: 1;
+  padding: 5px 0;
+  background: var(--bg-base);
+  color: var(--text-muted);
+  border: 1px solid var(--border-dim);
+  border-left: none;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.1s, color 0.1s;
 }
+.order-tab:first-child { border-left: 1px solid var(--border-dim); }
+.order-tab--active {
+  background: #000080;
+  color: #ffffff;
+  border-color: var(--color-accent);
+}
+
+/* ── OMON inputs ─────────────────────────────────────────────────────────── */
+.omon-input {
+  width: 100%;
+  padding: 6px 8px;
+  background: var(--bg-base);
+  border: 1px solid var(--border-dim);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+}
+.omon-input::placeholder { color: var(--text-muted); }
+.omon-input:focus        { border-color: var(--color-accent); }
+.omon-input--stop        { border-color: var(--color-warning); color: var(--color-warning); }
+.omon-input--stop::placeholder { color: var(--color-warning); opacity: 0.5; }
+
+/* ── Execute button ──────────────────────────────────────────────────────── */
+.execute-btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.execute-btn--long  { background: var(--color-up);      color: #000; }
+.execute-btn--short { background: var(--color-down);    color: #000; }
+.execute-btn--stop  { background: var(--color-warning); color: #000; }
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--border-dim); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }

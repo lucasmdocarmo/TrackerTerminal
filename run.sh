@@ -51,10 +51,25 @@ cmake ..
 make
 
 echo -e "${GREEN}All services launched. FrontEnd should run on localhost:5173${NC}"
-echo -e "${GREEN}Running Backend Engine... Press Ctrl+C to stop all.${NC}"
+echo -e "${GREEN}Running Backend Engine... Press Ctrl+C or run ./stop.sh to stop all.${NC}"
 
-# Trap Ctrl+C to kill the background processes and backend
-trap "echo 'Stopping servers...'; kill $FRONTEND_PID $BRIDGE_PID $HF_PID 2>/dev/null; exit" SIGINT SIGTERM
+# Save PIDs for stop.sh
+echo "$FRONTEND_PID $BRIDGE_PID $HF_PID" > /tmp/tracker_pids
+
+stop_all() {
+    echo "Stopping servers..."
+    kill $FRONTEND_PID $BRIDGE_PID $HF_PID 2>/dev/null
+    pkill -f "backend_quant_terminal" 2>/dev/null
+    pkill -f "ws_bridge.js"           2>/dev/null
+    pkill -f "hf_alpha.py"            2>/dev/null
+    pkill -f "vite"                   2>/dev/null
+    cd "$(dirname "$0")/Backend" && docker compose down 2>/dev/null
+    rm -f /tmp/tracker_pids
+    echo "All services stopped."
+    exit 0
+}
+
+trap stop_all SIGINT SIGTERM
 
 # Execute backend on the main thread so user sees logs
 ./backend_quant_terminal

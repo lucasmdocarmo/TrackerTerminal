@@ -1,91 +1,126 @@
 import React, { useEffect, useRef } from 'react';
-import { createChart, ColorType, LineSeries } from 'lightweight-charts';
+import { createChart, ColorType, CandlestickSeries } from 'lightweight-charts';
 
-interface ChartProps {
-  data: any[];
+export interface CandleData {
+  time:  number;
+  open:  number;
+  high:  number;
+  low:   number;
+  close: number;
 }
 
-class ErrorBoundary extends React.Component<{children: any}, {hasError: boolean, error: any}> {
-  constructor(props: any) { super(props); this.state = { hasError: false, error: null }; }
-  static getDerivedStateFromError(error: any) { return { hasError: true, error }; }
+interface ChartProps {
+  data:        CandleData[];
+  liveCandle?: CandleData;
+}
+
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: unknown }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: unknown) {
+    return { hasError: true, error };
+  }
   render() {
     if (this.state.hasError) {
-      return <div style={{ color: 'red', margin: '20px', fontFamily: 'monospace' }}>CHART CRASHED: {this.state.error?.message}</div>;
+      return (
+        <div style={{ color: 'red', margin: '20px', fontFamily: 'monospace' }}>
+          CHART ERROR: {String(this.state.error)}
+        </div>
+      );
     }
-    return this.props.children; 
+    return this.props.children;
   }
 }
 
-const ChartCore: React.FC<ChartProps> = ({ data }) => {
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-  const chartInstanceRef = useRef<any>(null);
-  const seriesRef = useRef<any>(null);
+const ChartCore: React.FC<ChartProps> = ({ data, liveCandle }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const chartRef     = useRef<ReturnType<typeof createChart> | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const seriesRef    = useRef<any>(null);
 
+  // Mount once — create chart and candlestick series
   useEffect(() => {
-    if (!chartContainerRef.current) return;
+    if (!containerRef.current) return;
 
-    try {
-        const chart = createChart(chartContainerRef.current, {
-          layout: {
-            background: { type: ColorType.Solid, color: "transparent" },
-            textColor: "#6c7784",
-          },
-          grid: {
-            vertLines: { color: "rgba(255,255,255,0.02)" },
-            horzLines: { color: "rgba(255,255,255,0.02)" },
-          },
-          timeScale: {
-            timeVisible: true,
-            secondsVisible: true,
-          },
-          width: chartContainerRef.current.clientWidth,
-          height: 340,
+    const chart = createChart(containerRef.current, {
+      layout: {
+        background: { type: ColorType.Solid, color: 'transparent' },
+        textColor:  '#888888',
+      },
+      grid: {
+        vertLines: { color: 'rgba(255,153,0,0.05)' },
+        horzLines: { color: 'rgba(255,153,0,0.05)' },
+      },
+      timeScale: {
+        timeVisible:    true,
+        secondsVisible: true,
+        borderColor:    '#2a2a2a',
+      },
+      rightPriceScale: { borderColor: '#2a2a2a' },
+      crosshair: {
+        vertLine: { color: '#ffb732', labelBackgroundColor: '#000080' },
+        horzLine: { color: '#ffb732', labelBackgroundColor: '#000080' },
+      },
+      width:  containerRef.current.clientWidth,
+      height: containerRef.current.clientHeight || 340,
+    });
+
+    const series = chart.addSeries(CandlestickSeries, {
+      upColor:         '#ffb732', // amber
+      downColor:       '#ff3333', // red
+      borderUpColor:   '#ffb732',
+      borderDownColor: '#ff3333',
+      wickUpColor:     '#ffb732',
+      wickDownColor:   '#ff3333',
+    });
+
+    chartRef.current  = chart;
+    seriesRef.current = series;
+
+    const onResize = () => {
+      if (containerRef.current) {
+        chart.applyOptions({
+          width:  containerRef.current.clientWidth,
+          height: containerRef.current.clientHeight || 340,
         });
-        
-        chart.timeScale().fitContent();
+      }
+    };
+    window.addEventListener('resize', onResize);
 
-        const newSeries = chart.addSeries(LineSeries, { 
-          color: '#4a90e2',
-          lineWidth: 2,
-        });
-        
-        if (data && data.length > 0) {
-            newSeries.setData(data);
-        }
+    return () => {
+      window.removeEventListener('resize', onResize);
+      chart.remove();
+      chartRef.current  = null;
+      seriesRef.current = null;
+    };
+  }, []);
 
-        chartInstanceRef.current = chart;
-        seriesRef.current = newSeries;
-
-        const handleResize = () => {
-          if (chartContainerRef.current) {
-            chart.applyOptions({ width: chartContainerRef.current.clientWidth });
-          }
-        };
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-          window.removeEventListener('resize', handleResize);
-          chart.remove();
-        };
-    } catch (err) {
-        console.error("Chart Engine Error:", err);
-    }
-  }, []); 
-
+  // When a completed candle is pushed, reload the full dataset
   useEffect(() => {
+    if (!seriesRef.current || data.length === 0) return;
     try {
-        if (seriesRef.current && data && data.length > 0) {
-          seriesRef.current.update(data[data.length - 1]);
-        }
-    } catch (err) {
-        console.error("Update Error:", err);
-    }
+      seriesRef.current.setData(data);
+      chartRef.current?.timeScale().scrollToRealTime();
+    } catch (_) { /* ignore stale updates */ }
   }, [data]);
+
+  // Update the live (in-progress) candle on every tick at 10 Hz
+  useEffect(() => {
+    if (!seriesRef.current || !liveCandle || liveCandle.open === 0) return;
+    try {
+      seriesRef.current.update(liveCandle);
+    } catch (_) { /* ignore stale updates */ }
+  }, [liveCandle]);
 
   return (
     <div
-      ref={chartContainerRef}
-      style={{ width: '100%', height: '100%', minHeight: '340px' }}
+      ref={containerRef}
+      style={{ width: '100%', height: '100%', minHeight: '280px' }}
     />
   );
 };

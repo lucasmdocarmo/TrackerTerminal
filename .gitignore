@@ -1,3 +1,14 @@
+# ── Environment & secrets ─────────────────────────────────────────────────────
+.env
+.env.*
+*.env
+!.env.example
+
+# ── Claude / AI tooling ───────────────────────────────────────────────────────
+CLAUDE.md
+.claude/
+
+# ── C++ build artifacts ───────────────────────────────────────────────────────
 # Prerequisites
 *.d
 
@@ -30,3 +41,44 @@
 *.exe
 *.out
 *.app
+
+# CMake build directory
+Backend/build/
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# ── Node / Frontend ───────────────────────────────────────────────────────────
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+*.egg-info/
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ── Editor / IDE ──────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Logs & runtime ────────────────────────────────────────────────────────────
+*.log
+logs/
+/tmp/tracker_pids
